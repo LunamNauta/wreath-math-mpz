@@ -166,6 +166,11 @@ void wm_mpz_divrem_raw_naive(wm_mpz_t div, wm_mpz_t rem, wm_mpz_t lhs, wm_mpz_t 
 void wm_mpz_divrem_raw_single_naive(wm_mpz_t div, wm_mpz_half_t* rem, wm_mpz_t lhs, wm_mpz_half_t rhs){
     wm_mpz_t out_tmp;
     wm_mpz_init_with_capacity(out_tmp, lhs->siz);
+    if (lhs->siz == 1){
+        *rem = lhs->digits[0] % rhs;
+        wm_mpz_ui(div, lhs->digits[0] / rhs);
+        return;
+    }
     wm_mpz_full_t carry = 0;
     bool makes_smaller = rhs > lhs->digits[lhs->siz-1];
     if (makes_smaller && lhs->siz == 1){
@@ -200,7 +205,7 @@ void wm_mpz_print(wm_mpz_t z){
     wm_mpz_set(div, z);
     while (div->siz > 1 || div->digits[0] != 0){
         wm_mpz_divrem_raw_single_naive(div, &rem, div, 10);
-        wm_mpz_print_digits(div);
+        //wm_mpz_print_digits(div);
         uintmax_t rem_tmp = rem;
         printf("%jx", rem_tmp);
     }
